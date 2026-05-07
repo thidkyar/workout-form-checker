@@ -27,6 +27,7 @@ export function createUI() {
   const holdTimerEl = $('#hold-timer');
   const summaryEl = $('#summary-content');
   const lowConfidenceEl = $('#low-confidence-banner');
+  const errorBannerEl = $('#error-banner');
 
   let listeners = {
     selectExercise: () => {},
@@ -116,6 +117,18 @@ export function createUI() {
     if (lowConfidenceEl) lowConfidenceEl.hidden = !visible;
   }
 
+  function showError(text) {
+    if (!errorBannerEl) return;
+    errorBannerEl.textContent = text;
+    errorBannerEl.hidden = false;
+  }
+
+  function clearError() {
+    if (!errorBannerEl) return;
+    errorBannerEl.hidden = true;
+    errorBannerEl.textContent = '';
+  }
+
   function renderSummary(session, exerciseName) {
     if (!summaryEl) return;
     const lines = [];
@@ -178,6 +191,8 @@ export function createUI() {
     showIssueCue,
     setSetupProgress,
     setLowConfidence,
+    showError,
+    clearError,
     renderSummary,
   };
 }

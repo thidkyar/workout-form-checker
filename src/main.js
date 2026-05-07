@@ -37,17 +37,53 @@ if (lastExercise && exercises[lastExercise]) {
 }
 
 let handsfreeStarted = false;
-ui.onSelectExercise((name) => {
+
+// iOS Safari requires the getUserMedia call to be in the same call stack as
+// the user gesture. Handsfree.js loads its model scripts async first, so by
+// the time IT calls getUserMedia, Safari has discarded the gesture and silently
+// fails. We pre-warm permission with a direct getUserMedia call inside the
+// click handler — once granted, Handsfree's later getUserMedia just works.
+async function preWarmCameraPermission() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error('Webcam API not available. HTTPS is required.');
+  }
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: 'user' },
+    audio: false,
+  });
+  stream.getTracks().forEach((t) => t.stop());
+}
+
+ui.onSelectExercise(async (name) => {
   if (!exercises[name]) return;
   currentExercise = exercises[name];
   localStorage.setItem(LAST_EXERCISE_KEY, name);
   cameraCheck.reset();
   ui.setExerciseLabel(name, currentExercise.primaryAngleLabel);
-  if (!handsfreeStarted) {
-    handsfree.start();
-    handsfreeStarted = true;
-  }
+  ui.clearError();
   setState('setup-camera');
+
+  if (!handsfreeStarted) {
+    try {
+      await preWarmCameraPermission();
+    } catch (err) {
+      ui.showError(
+        `Camera permission needed: ${err?.name || ''} ${err?.message || err}`.trim()
+        + '\nIn Safari: aA → Website Settings → Camera → Allow.'
+      );
+      console.error('preWarmCameraPermission failed', err);
+      setState('idle');
+      return;
+    }
+    try {
+      await handsfree.start();
+      handsfreeStarted = true;
+    } catch (err) {
+      ui.showError(`Pose model failed to start: ${err?.message || err}`);
+      console.error('handsfree.start failed', err);
+      setState('idle');
+    }
+  }
 });
 
 ui.onStartSet(() => {
@@ -69,6 +105,13 @@ setState('idle');
 
 // Use a relative path so the app works whether served from `/` (local dev)
 // or from `/<repo>/` (GitHub Pages project sites).
+if (!globalThis.Handsfree) {
+  document.querySelector('#error-banner').textContent =
+    'Handsfree.js failed to load. Check public/handsfree.js exists at the deployed URL.';
+  document.querySelector('#error-banner').hidden = false;
+  throw new Error('Handsfree library not loaded');
+}
+
 const handsfree = new globalThis.Handsfree({
   showDebug: false,
   pose: { enabled: true, modelComplexity: 1, smoothLandmarks: true },
