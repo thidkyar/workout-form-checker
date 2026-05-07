@@ -11,6 +11,25 @@ import { createUI } from './ui.js';
 
 const STORAGE_KEY = 'wfc.lastSession';
 const LAST_EXERCISE_KEY = 'wfc.lastExercise';
+const BUILD_TAG = 'v3-prewarm-diag';
+
+// On-page diagnostic log. iOS Safari has no devtools, so we render every
+// noteworthy step into a fixed log overlay the user can read.
+function diag(msg) {
+  console.log('[diag]', msg);
+  const el = document.querySelector('#debug-log');
+  if (!el) return;
+  const ts = new Date().toISOString().slice(11, 19);
+  el.textContent += `[${ts}] ${msg}\n`;
+  el.scrollTop = el.scrollHeight;
+}
+diag(`build ${BUILD_TAG}`);
+diag(`baseURI ${document.baseURI}`);
+diag(`Handsfree global: ${typeof globalThis.Handsfree}`);
+diag(`mediaDevices: ${typeof navigator.mediaDevices}`);
+diag(`getUserMedia: ${typeof navigator.mediaDevices?.getUserMedia}`);
+window.addEventListener('error', (e) => diag(`window error: ${e.message}`));
+window.addEventListener('unhandledrejection', (e) => diag(`unhandled: ${e.reason?.message || e.reason}`));
 const REST_AFTER_MS = 5000;
 const LOW_CONF_HOLD_MS = 2000;
 const LOW_CONF_THRESHOLD = 0.6;
@@ -44,6 +63,7 @@ let handsfreeStarted = false;
 // fails. We pre-warm permission with a direct getUserMedia call inside the
 // click handler — once granted, Handsfree's later getUserMedia just works.
 async function preWarmCameraPermission() {
+  diag('preWarm: requesting camera...');
   if (!navigator.mediaDevices?.getUserMedia) {
     throw new Error('Webcam API not available. HTTPS is required.');
   }
@@ -51,11 +71,13 @@ async function preWarmCameraPermission() {
     video: { facingMode: 'user' },
     audio: false,
   });
+  diag('preWarm: granted; releasing test stream');
   stream.getTracks().forEach((t) => t.stop());
 }
 
 ui.onSelectExercise(async (name) => {
-  if (!exercises[name]) return;
+  diag(`click: ${name}`);
+  if (!exercises[name]) { diag(`unknown exercise: ${name}`); return; }
   currentExercise = exercises[name];
   localStorage.setItem(LAST_EXERCISE_KEY, name);
   cameraCheck.reset();
@@ -67,22 +89,25 @@ ui.onSelectExercise(async (name) => {
     try {
       await preWarmCameraPermission();
     } catch (err) {
-      ui.showError(
-        `Camera permission needed: ${err?.name || ''} ${err?.message || err}`.trim()
-        + '\nIn Safari: aA → Website Settings → Camera → Allow.'
-      );
-      console.error('preWarmCameraPermission failed', err);
+      const msg = `Camera permission failed: ${err?.name || ''} ${err?.message || err}`.trim();
+      diag(msg);
+      ui.showError(msg + '\nIn Safari: aA → Website Settings → Camera → Allow.');
       setState('idle');
       return;
     }
     try {
+      diag('handsfree.start()...');
       await handsfree.start();
       handsfreeStarted = true;
+      diag('handsfree.start: ok');
     } catch (err) {
-      ui.showError(`Pose model failed to start: ${err?.message || err}`);
-      console.error('handsfree.start failed', err);
+      const msg = `Pose model failed to start: ${err?.message || err}`;
+      diag(msg);
+      ui.showError(msg);
       setState('idle');
     }
+  } else {
+    diag('handsfree already started');
   }
 });
 

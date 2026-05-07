@@ -246,6 +246,26 @@ button.ghost {
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* On-page diagnostic log — iOS Safari has no easy console access. */
+.debug-log {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + var(--safe-bottom));
+  max-height: 35vh;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #9ae6b4;
+  font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  z-index: 50;
+  white-space: pre-wrap;
+  pointer-events: auto;
+}
+
 .error-banner {
   position: fixed;
   top: 0;
