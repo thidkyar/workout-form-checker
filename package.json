@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Browser-based form coach using webcam + Handsfree.js pose tracking. Squat, push-up, plank.",
   "scripts": {
-    "test": "node --test \"test/*.test.js\"",
+    "test": "node --test",
     "eject": "bash scripts/eject.sh",
     "serve": "npx --yes serve -l 5173 ."
   },
