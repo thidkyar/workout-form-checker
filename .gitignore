@@ -1,0 +1,6 @@
+node_modules/
+# public/ is built by `npm run eject` (locally and in the deploy workflow).
+public/
+.DS_Store
+*.log
+_site/

@@ -1,0 +1,333 @@
+:root {
+  --bg: #0b0d10;
+  --fg: #f4f6f8;
+  --muted: #8b95a0;
+  --card: #161a1f;
+  --accent: #5b8def;
+  --good: #4ade80;
+  --warn: #facc15;
+  --bad: #f87171;
+  --border: #242a31;
+  --score-color: var(--good);
+  --score: 0%;
+  --progress: 0%;
+
+  /* Safe-area insets for notched devices. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* dvh handles mobile browser chrome that vh can't. */
+  min-height: 100dvh;
+  /* Prevent pull-to-refresh and rubber-band on mobile during a set. */
+  overscroll-behavior: contain;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding:
+    calc(16px + var(--safe-top))
+    calc(16px + var(--safe-right))
+    calc(16px + var(--safe-bottom))
+    calc(16px + var(--safe-left));
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+header {
+  flex-shrink: 0;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.subtitle {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.screen {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen[hidden] { display: none; }
+
+h2 { margin-top: 0; }
+
+/* Exercise picker */
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.exercise-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 96px;        /* touch target */
+  padding: 16px 8px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.1s, border-color 0.1s, background 0.1s;
+}
+
+.exercise-btn:active {
+  transform: scale(0.97);
+  background: var(--card);
+}
+
+.exercise-btn:hover { border-color: var(--accent); }
+.exercise-btn.last-used { border-color: var(--accent); }
+.exercise-btn .emoji { font-size: 36px; line-height: 1; }
+
+button.primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 24px;
+  min-height: 56px;        /* generous touch target */
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+button.primary:active { transform: scale(0.98); }
+
+button.primary.big {
+  font-size: 28px;
+  padding: 28px 36px;
+  min-height: 80px;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+/* Setup progress track */
+.setup-progress-track {
+  width: 100%;
+  height: 16px;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 16px 0 8px;
+  border: 1px solid var(--border);
+}
+
+.setup-progress-fill {
+  height: 100%;
+  width: var(--progress);
+  background: var(--good);
+  transition: width 0.1s linear;
+}
+
+.hint { color: var(--muted); font-size: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+/* HUD — readable from 6+ feet */
+.hud {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1 1 auto;
+}
+
+.hud-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.rep-card, .angle-card {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.rep-label, .angle-card .muted {
+  font-size: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rep-num {
+  font-size: clamp(72px, 22vh, 220px);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.angle-num {
+  font-size: clamp(36px, 8vh, 64px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hold-timer {
+  font-size: clamp(72px, 22vh, 200px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.score-bar-wrap {
+  height: 24px;
+  background: var(--bg);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.score-bar {
+  height: 100%;
+  width: var(--score);
+  background: var(--score-color);
+  transition: width 0.1s linear, background 0.2s;
+}
+
+.cue {
+  min-height: 40px;
+  text-align: center;
+  font-size: clamp(18px, 3.5vh, 28px);
+  font-weight: 600;
+  color: var(--warn);
+}
+
+.cue.flash { animation: flash 0.4s ease-out; }
+@keyframes flash {
+  0%   { transform: scale(1.1); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.banner {
+  background: var(--bad);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Summary */
+.big-num {
+  font-size: clamp(48px, 14vh, 96px);
+  font-weight: 800;
+  margin: 8px 0;
+  text-align: center;
+}
+
+#summary-content ul { padding-left: 20px; }
+
+#timeline-canvas {
+  display: block;
+  margin: 12px 0;
+  width: 100%;
+  height: 48px;
+  background: var(--bg);
+  border-radius: 6px;
+}
+
+/* Camera preview — mirror only the video, not the math.
+   Smaller on phones; uses safe-area insets so it doesn't slide under
+   notches or home indicators. */
+#cam-preview {
+  position: fixed;
+  bottom: calc(8px + var(--safe-bottom));
+  right: calc(8px + var(--safe-right));
+  width: 96px;
+  height: auto;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  transform: scaleX(-1);
+  z-index: 10;
+  background: black;
+  pointer-events: none;
+}
+
+@media (min-width: 720px) {
+  #cam-preview { width: 160px; }
+}
+
+/* ---------- Phone portrait ---------- */
+@media (max-width: 600px) {
+  main { padding: calc(8px + var(--safe-top)) calc(8px + var(--safe-right)) calc(8px + var(--safe-bottom)) calc(8px + var(--safe-left)); }
+  header h1 { font-size: 20px; }
+  .subtitle { font-size: 12px; }
+  .exercise-grid { grid-template-columns: 1fr 1fr; }
+  .screen { padding: 16px; border-radius: 10px; }
+}
+
+/* ---------- Phone landscape ---------- */
+/* Most likely orientation when the phone is on its side on the floor.
+   Maximize the rep counter / hold timer; pack everything else compactly. */
+@media (orientation: landscape) and (max-height: 500px) {
+  header { display: none; }
+  main { padding: calc(4px + var(--safe-top)) calc(8px + var(--safe-right)) calc(4px + var(--safe-bottom)) calc(8px + var(--safe-left)); gap: 8px; }
+  .screen { padding: 12px; border-radius: 8px; }
+
+  /* Idle picker: row of buttons. */
+  .exercise-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .exercise-btn { min-height: 64px; padding: 8px; font-size: 14px; }
+  .exercise-btn .emoji { font-size: 24px; }
+
+  /* HUD: rep number takes the full screen width; everything else hugs edges. */
+  .hud-top { grid-template-columns: 1fr; gap: 8px; }
+  .rep-card, .hold-timer { padding: 8px; }
+  .rep-num { font-size: clamp(96px, 50vh, 240px); }
+  .hold-timer { font-size: clamp(96px, 50vh, 240px); padding: 8px; }
+  .angle-card { padding: 8px; }
+  .angle-num { font-size: clamp(28px, 10vh, 56px); }
+  .score-bar-wrap { height: 16px; }
+  .cue { min-height: 28px; font-size: clamp(16px, 5vh, 24px); }
+
+  button.primary { padding: 10px 16px; min-height: 44px; font-size: 16px; }
+  #cam-preview { width: 80px; }
+}

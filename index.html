@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Form Check" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Workout Form Checker</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script defer src="./public/handsfree.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Workout Form Checker</h1>
+        <p class="subtitle">Side-on camera • Browser only • No data leaves your device</p>
+      </header>
+
+      <!-- Idle: exercise picker -->
+      <section id="screen-idle" class="screen">
+        <h2>Pick an exercise</h2>
+        <div class="exercise-grid">
+          <button data-exercise="squat" class="exercise-btn">
+            <span class="emoji">🦵</span>
+            <span>Squat</span>
+          </button>
+          <button data-exercise="pushup" class="exercise-btn">
+            <span class="emoji">💪</span>
+            <span>Push-up</span>
+          </button>
+          <button data-exercise="plank" class="exercise-btn">
+            <span class="emoji">🧘</span>
+            <span>Plank</span>
+          </button>
+        </div>
+        <p class="hint">Picking an exercise will request webcam access.</p>
+      </section>
+
+      <!-- Setup-camera: side-view calibration -->
+      <section id="screen-setup-camera" class="screen" hidden>
+        <h2>Camera setup</h2>
+        <p>Place your phone or laptop on the floor a few feet to your side. Stand sideways to the camera with your full body in frame.</p>
+        <div class="setup-progress-track">
+          <div id="setup-progress" class="setup-progress-fill"></div>
+        </div>
+        <p id="setup-hint" class="hint">Stand still and face sideways…</p>
+        <p id="camera-side" class="muted small"></p>
+      </section>
+
+      <!-- Ready: big start button -->
+      <section id="screen-ready" class="screen" hidden>
+        <h2 id="exercise-title">Ready</h2>
+        <p>Camera is set. When you're ready:</p>
+        <button id="start-set-btn" class="primary big">Start set</button>
+      </section>
+
+      <!-- Working / resting: HUD -->
+      <section id="screen-working" class="screen hud" hidden>
+        <div id="low-confidence-banner" class="banner" hidden>
+          Low landmark confidence — try tighter clothing or better lighting
+        </div>
+
+        <div class="hud-top">
+          <div class="rep-card">
+            <div class="rep-label">Reps</div>
+            <div id="rep-count" class="rep-num">0</div>
+          </div>
+          <div id="hold-timer" class="hold-timer">0:00</div>
+          <div class="angle-card">
+            <div id="angle-label" class="muted small">Angle</div>
+            <div id="angle-readout" class="angle-num">—°</div>
+          </div>
+        </div>
+
+        <div class="score-bar-wrap">
+          <div id="score-bar" class="score-bar"></div>
+        </div>
+
+        <div id="cue" class="cue"></div>
+
+        <button data-action="end-set" class="primary">End set</button>
+      </section>
+
+      <section id="screen-resting" class="screen" hidden>
+        <h2>Resting…</h2>
+        <p>Pick up where you left off, or end the set.</p>
+        <button data-action="end-set" class="primary">End set</button>
+      </section>
+
+      <section id="screen-summary" class="screen" hidden>
+        <div id="summary-content"></div>
+        <button id="restart-btn" class="primary">New set</button>
+      </section>
+    </main>
+
+    <video id="cam-preview" autoplay playsinline muted></video>
+  </body>
+</html>
