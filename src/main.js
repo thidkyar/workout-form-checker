@@ -11,7 +11,7 @@ import { createUI } from './ui.js';
 
 const STORAGE_KEY = 'wfc.lastSession';
 const LAST_EXERCISE_KEY = 'wfc.lastExercise';
-const BUILD_TAG = 'v4-tdz-fix';
+const BUILD_TAG = 'v5-node-eject';
 
 // On-page diagnostic log. iOS Safari has no devtools, so we render every
 // noteworthy step into a fixed log overlay the user can read.

@@ -34,12 +34,22 @@ jobs:
         run: npm test
 
       - name: Eject Handsfree library + models into ./public
-        run: npm run eject
+        run: |
+          npm run eject
+          # Fail loudly if the eject didn't produce the file we depend on,
+          # rather than letting a green deploy silently miss it.
+          test -f public/handsfree.js || { echo "::error::public/handsfree.js missing after eject"; exit 1; }
+          echo "ejected files:"
+          ls -la public/
+          ls -la public/assets/@mediapipe/pose/ | head -10
 
       - name: Stage site
         run: |
           mkdir -p _site
           cp -r index.html style.css src public _site/
+          echo "staged files:"
+          ls -la _site/
+          ls -la _site/public/ | head -5
 
       - uses: actions/configure-pages@v5
 
