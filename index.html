@@ -10,7 +10,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <title>Workout Form Checker</title>
     <link rel="stylesheet" href="./style.css" />
-    <script defer src="./public/handsfree.js"></script>
+    <script defer src="./public/handsfree.js" onerror="(()=>{const e=document.querySelector('#debug-log');if(e)e.textContent+='[boot] handsfree.js script load FAILED (404 or MIME)\n';})()"></script>
     <script type="module" src="./src/main.js"></script>
   </head>
   <body>

@@ -11,7 +11,7 @@ import { createUI } from './ui.js';
 
 const STORAGE_KEY = 'wfc.lastSession';
 const LAST_EXERCISE_KEY = 'wfc.lastExercise';
-const BUILD_TAG = 'v3-prewarm-diag';
+const BUILD_TAG = 'v4-tdz-fix';
 
 // On-page diagnostic log. iOS Safari has no devtools, so we render every
 // noteworthy step into a fixed log overlay the user can read.
@@ -30,6 +30,11 @@ diag(`mediaDevices: ${typeof navigator.mediaDevices}`);
 diag(`getUserMedia: ${typeof navigator.mediaDevices?.getUserMedia}`);
 window.addEventListener('error', (e) => diag(`window error: ${e.message}`));
 window.addEventListener('unhandledrejection', (e) => diag(`unhandled: ${e.reason?.message || e.reason}`));
+
+// Probe whether handsfree.js was actually deployed (HEAD request).
+fetch(new URL('./public/handsfree.js', document.baseURI), { method: 'HEAD' })
+  .then((r) => diag(`fetch public/handsfree.js: HTTP ${r.status}`))
+  .catch((e) => diag(`fetch public/handsfree.js failed: ${e.message}`));
 const REST_AFTER_MS = 5000;
 const LOW_CONF_HOLD_MS = 2000;
 const LOW_CONF_THRESHOLD = 0.6;
@@ -124,7 +129,9 @@ ui.onRestart(() => {
   setState('idle');
 });
 
-setState('idle');
+// (state defaults to 'idle'; screen-idle is the only visible section in HTML,
+// so no need to call setState('idle') here — and doing so would TDZ-error
+// because setState now references wakeLock declared further down.)
 
 // ---------- Handsfree setup ----------
 
